@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Function Transformation</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Graph Function Transformation</h1>
+        <div class="controls">
+            <label for="parentFunction">Parent Function (f(x)):</label>
+            <input type="text" id="parentFunction" value="x^2" oninput="renderMath()">
+            <label for="a">a:</label>
+            <input type="number" id="a" value="1" oninput="renderMath()">
+            <label for="b">b:</label>
+            <input type="number" id="b" value="1" oninput="renderMath()">
+            <label for="h">h:</label>
+            <input type="number" id="h" value="0" oninput="renderMath()">
+            <label for="k">k:</label>
+            <input type="number" id="k" value="0" oninput="renderMath()">
+            <button onclick="transformGraph()">Transform</button>
+        </div>
+        <div id="mathOutput"></div>
+        <canvas id="graphCanvas" width="600" height="400"></canvas>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        function renderMath() {
+            const parentFunction = document.getElementById('parentFunction').value;
+            const a = document.getElementById('a').value;
+            const b = document.getElementById('b').value;
+            const h = document.getElementById('h').value;
+            const k = document.getElementById('k').value;
+            const mathOutput = `\\[f(x) = ${a} \\cdot ${parentFunction.replace('x', '(bx-h)')} + ${k}\\]`;
+            document.getElementById('mathOutput').innerHTML = mathOutput;
+            MathJax.typeset();
+        }
+        window.onload = renderMath;
+    </script>
+</body>
+</html>
