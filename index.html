@@ -193,7 +193,8 @@ class TransformationVisualizer {
         this.gridSize = 50;
         this.offsetX = 0;
         this.offsetY = 0;
-        this.scale = 1;
+        this.scaleX = 1;
+        this.scaleY = 1;
         
         this.setupEventListeners();
         this.resizeCanvas();
@@ -248,8 +249,13 @@ class TransformationVisualizer {
         this.canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
             const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-            this.scale *= zoomFactor;
-            this.scale = Math.max(0.1, Math.min(5, this.scale));
+            if (e.shiftKey) {
+                this.scaleX *= zoomFactor;
+                this.scaleX = Math.max(0.1, Math.min(5, this.scaleX));
+            } else {
+                this.scaleY *= zoomFactor;
+                this.scaleY = Math.max(0.1, Math.min(5, this.scaleY));
+            }
             this.drawGraph();
         });
     }
@@ -285,7 +291,7 @@ class TransformationVisualizer {
 
         // Vertical grid lines
         for (let x = -10; x <= 10; x++) {
-            const screenX = originX + x * this.gridSize * this.scale;
+            const screenX = originX + x * this.gridSize * this.scaleX;
             if (screenX >= 0 && screenX <= width) {
                 this.ctx.moveTo(screenX, 0);
                 this.ctx.lineTo(screenX, height);
@@ -294,7 +300,7 @@ class TransformationVisualizer {
 
         // Horizontal grid lines
         for (let y = -10; y <= 10; y++) {
-            const screenY = originY + y * this.gridSize * this.scale;
+            const screenY = originY + y * this.gridSize * this.scaleY;
             if (screenY >= 0 && screenY <= height) {
                 this.ctx.moveTo(0, screenY);
                 this.ctx.lineTo(width, screenY);
@@ -321,7 +327,7 @@ class TransformationVisualizer {
         // Transform coordinates based on parameters
         for (let x = -10; x <= 10; x++) {
             if (x === 0) continue; // Skip 0 to avoid cluttering origin
-            const screenX = originX + x * this.gridSize * this.scale;
+            const screenX = originX + x * this.gridSize * this.scaleX;
             if (screenX >= 0 && screenX <= width) {
                 // Transform x coordinate
                 const transformedX = (x - params.h) / params.b;
@@ -333,7 +339,7 @@ class TransformationVisualizer {
         this.ctx.textBaseline = 'middle';
         for (let y = -10; y <= 10; y++) {
             if (y === 0) continue; // Skip 0 to avoid cluttering origin
-            const screenY = originY + y * this.gridSize * this.scale;
+            const screenY = originY + y * this.gridSize * this.scaleY;
             if (screenY >= 0 && screenY <= height) {
                 // Transform y coordinate
                 const transformedY = (y - params.k) / params.a;
@@ -388,7 +394,7 @@ class TransformationVisualizer {
         // Draw graph point by point
         for (let px = 0; px < width; px++) {
             // Convert screen x to coordinate x
-            const x = (px - originX) / (this.gridSize * this.scale);
+            const x = (px - originX) / (this.gridSize * this.scaleX);
             
             try {
                 // Calculate y value from the base function
@@ -397,7 +403,7 @@ class TransformationVisualizer {
                 if (!isNaN(y) && isFinite(y)) {
                     // Convert the coordinate point to screen position
                     const screenX = px;
-                    const screenY = originY - (y * this.gridSize * this.scale);
+                    const screenY = originY - (y * this.gridSize * this.scaleY);
                     
                     if (lastY !== null && Math.abs(screenY - lastY) > 100) {
                         this.ctx.stroke();
@@ -424,8 +430,8 @@ class TransformationVisualizer {
 
     updateTooltip(e) {
         const rect = this.canvas.getBoundingClientRect();
-        const x = (e.clientX - rect.left - this.canvas.width/2 - this.offsetX) / (this.gridSize * this.scale);
-        const y = -(e.clientY - rect.top - this.canvas.height/2 - this.offsetY) / (this.gridSize * this.scale);
+        const x = (e.clientX - rect.left - this.canvas.width/2 - this.offsetX) / (this.gridSize * this.scaleX);
+        const y = -(e.clientY - rect.top - this.canvas.height/2 - this.offsetY) / (this.gridSize * this.scaleY);
 
         try {
             const params = this.getParameters();
